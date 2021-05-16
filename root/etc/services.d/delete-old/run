@@ -1,0 +1,20 @@
+#!/usr/bin/with-contenv bash
+
+# shellcheck shell=bash
+
+while true; do
+
+    if [[ -n "${DELETE_DIR}" ]] && [[ -n "${DELETE_DAYS}" ]]; then
+
+        # Delete old files
+        if find "$DELETE_DIR" -type f -mtime "+${DELETE_DAYS}" | grep .; then
+            echo "^^^ These files are older than ${DELETE_DAYS} days and will be deleted"
+        fi
+        find "$DELETE_DIR" -type f -mtime "+${DELETE_DAYS}" -delete
+
+        # # Delete empty dirs
+        find "$DELETE_DIR" -type d -empty -delete
+    fi
+
+    sleep $(( $(date -d "tomorrow ${DELETE_TIME}" +%s) - $(date +%s) ))
+done
