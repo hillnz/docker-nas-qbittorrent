@@ -1,4 +1,4 @@
-# renovate: datasource=docker depName=linuxserver/transmission versioning=regex:^(?<major>\d+)\.0?(?<minor>\d+).+-ls(?<patch>\d+)$
+# renovate: datasource=docker depName=linuxserver/qbittorrent versioning=regex:^(?<major>\d+)\.0?(?<minor>\d+).+-ls(?<patch>\d+)$
 ARG LS_VERSION=14.3.5.99202105022253-7365-063844ed4ubuntu20.04.1-ls133
 FROM linuxserver/qbittorrent:${LS_VERSION}
 
