@@ -1,5 +1,5 @@
 # renovate: datasource=docker depName=linuxserver/qbittorrent versioning=regex:^(?<major>\d+)\.0?(?<minor>\d+).+-ls(?<patch>\d+)$
-ARG LS_VERSION=14.3.6.99202107121017-7389-3ac8c97e6ubuntu20.04.1-ls145
+ARG LS_VERSION=14.3.6.99202107121017-7389-3ac8c97e6ubuntu20.04.1-ls146
 FROM linuxserver/qbittorrent:${LS_VERSION}
 
 RUN apt-get update && apt-get install -y python3 && \
