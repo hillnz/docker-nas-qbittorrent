@@ -1,4 +1,0 @@
-#!/usr/bin/execlineb -S0
-
-# This kills the container
-s6-svscanctl -t /var/run/s6/services
