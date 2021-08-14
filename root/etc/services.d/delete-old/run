@@ -2,19 +2,22 @@
 
 # shellcheck shell=bash
 
+set -e
+
+qbt settings set url "http://localhost:$WEBUI_PORT"
+
 while true; do
 
-    if [[ -n "${DELETE_DIR}" ]] && [[ -n "${DELETE_DAYS}" ]]; then
-
-        # Delete old files
-        if find "$DELETE_DIR" -type f -mtime "+${DELETE_DAYS}" | grep .; then
-            echo "^^^ These files are older than ${DELETE_DAYS} days and will be deleted"
+    while [ "$(findmnt -f -o AVAIL -b -n -T /downloads)" -lt "${MIN_FREE}" ]; do
+        
+        oldest_download="$(qbt torrent list -f completed -s CompletionOn -l 1 -F json | jq -r '.[0].hash')"
+        if [ "$oldest_download" = "null" ]; then
+            echo "WARNING: There are no torrents to delete despite the disk being low on space."
+            break
         fi
-        find "$DELETE_DIR" -type f -mtime "+${DELETE_DAYS}" -delete
 
-        # # Delete empty dirs
-        find "$DELETE_DIR" -type d -empty -delete
-    fi
+        qbt torrent delete -f "$oldest_download"
+    done
 
     sleep $(( $(date -d "tomorrow ${DELETE_TIME}" +%s) - $(date +%s) ))
 done
