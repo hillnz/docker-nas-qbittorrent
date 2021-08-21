@@ -1,5 +1,5 @@
 # renovate: datasource=docker depName=linuxserver/qbittorrent versioning=regex:^(?<major>\d+)\.0?(?<minor>\d+).+-ls(?<patch>\d+)$
-ARG LS_VERSION=14.3.7.99202108032349-7395-0415c0c6fubuntu20.04.1-ls149
+ARG LS_VERSION=14.3.7.99202108210853-7409-250cac73bubuntu20.04.1-ls150
 FROM linuxserver/qbittorrent:${LS_VERSION}
 
 RUN apt-get update && apt-get install -y \
