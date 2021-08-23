@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bash
+
+# shellcheck shell=bash
+
+while [ ! -f /var/run/vpn-up ]; do
+    sleep 1
+done
+
+while [ -f /var/run/vpn-up ]; do
+    sleep 1
+done

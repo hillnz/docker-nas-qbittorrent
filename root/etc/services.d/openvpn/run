@@ -1,0 +1,42 @@
+#!/usr/bin/with-contenv bash
+
+# shellcheck shell=bash
+
+set -e
+
+sleep 3
+
+TEMP_DIR="$(mktemp -d)"
+
+if [ ! -f "${OPENVPN_CONFIG_FILE}" ] ; then
+    echo "No OpenVPN config. Exiting."
+    exit 1
+fi
+
+# Add ovpn user/pass
+if [ -n "${OPENVPN_USERNAME}" ]; then
+    echo "$OPENVPN_USERNAME" >"${TEMP_DIR}/openvpn-credentials.txt"
+    echo "$OPENVPN_PASSWORD" >>"${TEMP_DIR}/openvpn-credentials.txt"
+    chmod 600 "${TEMP_DIR}/openvpn-credentials.txt"
+
+    grep -v "auth-user-pass" <"${OPENVPN_CONFIG_FILE}" >"${TEMP_DIR}/config.ovpn"
+    echo "auth-user-pass ${TEMP_DIR}/openvpn-credentials.txt" >>"${TEMP_DIR}/config.ovpn"
+fi
+
+if [ ! -f "${TEMP_DIR}/config.ovpn" ]; then
+    cp "${OPENVPN_CONFIG_FILE}" "${TEMP_DIR}/config.ovpn"
+fi
+
+# Ensure external connections via docker network find their way back
+docker_ip=$(ip addr show eth0 | awk '$1 == "inet" {gsub(/\/.*$/, "", $2); print $2}')
+docker_gw=$(ip route | awk '/default/ {print $3}')
+ip rule add from "$docker_ip" table 10
+ip route add table 10 default via "$docker_gw" table 10
+
+exec openvpn \
+    --config "${TEMP_DIR}/config.ovpn" \
+    --connect-retry-max 1 \
+    --resolv-retry 1 \
+    --script-security 2 \
+    --up /usr/local/bin/up \
+    --down /usr/local/bin/down

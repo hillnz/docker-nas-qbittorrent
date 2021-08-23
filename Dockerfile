@@ -4,6 +4,7 @@ FROM linuxserver/qbittorrent:${LS_VERSION}
 
 RUN apt-get update && apt-get install -y \
         jq \
+        openvpn \
     && rm -rf /var/lib/apt/lists/*
 
 ENV MIN_FREE=5368709120 \
